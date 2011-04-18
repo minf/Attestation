@@ -6,7 +6,10 @@
 #include <avr/pgmspace.h>
 
 #define CHECKSUM_LENGTH 4
-#define MAX_MEMORY_ACCESSES 1544474 // 128K * ln(128K)
+
+// due to the coupon collector's problem we have to do 128K * ln(128K) accesses
+
+#define MAX_MEMORY_ACCESSES 1544474 
 
 void attestation(uint32_t nonce);
 

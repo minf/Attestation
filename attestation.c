@@ -9,6 +9,8 @@
 uint16_t rc4_i = 0, rc4_j = 0;
 uint8_t rc4_s[256];
   
+// swap bytes within s-box
+
 void rc4_swap(uint8_t i, uint8_t j) {
   uint8_t tmp;
 
@@ -16,6 +18,8 @@ void rc4_swap(uint8_t i, uint8_t j) {
   rc4_s[i] = rc4_s[j];
   rc4_s[j] = tmp;
 }
+
+// initialize rc4 s-box
 
 void rc4_init(uint8_t* key, uint8_t length) {
   uint16_t i, j;
@@ -31,6 +35,8 @@ void rc4_init(uint8_t* key, uint8_t length) {
     rc4_swap(i, j);
   }
 }
+
+// ask rc4 PRNG for next random
 
 uint8_t rc4_next() {
   rc4_i = (rc4_i + 1) % 256;
@@ -58,25 +64,41 @@ uint32_t next_addr() {
 // calculate attestation checksum
 
 void attestation() {
-  uint8_t key[] = { 0x38, 0x79, 0xf3, 0x1d };
-  uint32_t max_addr = 0x1ffff, i, current_addr, last_addr;
+  uint8_t nonce[] = { 0x38, 0x79, 0xf3, 0x1d };
+  uint32_t max_addr = MAX_MEMORY, i, current_addr, last_addr;
   uint8_t checksum[CHECKSUM_LENGTH];
-  uint8_t byte;
+  uint8_t byte, carry;
+
+  // initialize checksum bytes
 
   for(i = 0; i < CHECKSUM_LENGTH; i++)
     checksum[i] = 0;
 
-  rc4_init(key, 4);
+  // initialize rc4 using nonce
+
+  rc4_init(nonce, 4);
+
+  // initialize addresses
 
   current_addr = last_addr = next_addr();
 
   for(i = 0, byte = 0; i < max_addr; i++) {
+    // update checksum byte
+
     checksum[byte] += (pgm_read_byte_far(current_addr) ^ checksum[(byte - 2) % CHECKSUM_LENGTH]) + last_addr;
 
-    // TODO rotate
+    // rotate left 1 bit
+
+    carry = checksum[byte] >> 7;
+    checksum[byte] <<= 1;
+    checksum[byte] += carry;
+
+    // increment checksum index
 
     byte++;
     byte %= CHECKSUM_LENGTH;
+
+    // save address in last_addr and ask PRNG for next address
 
     last_addr = current_addr;
     current_addr = next_addr();

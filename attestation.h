@@ -6,7 +6,7 @@
 #include <avr/pgmspace.h>
 
 #define CHECKSUM_LENGTH 4
-#define MAX_MEMORY 0x1ffff
+#define MAX_MEMORY_ACCESSES 1544474 // 128K * ln(128K)
 
 void attestation(uint32_t nonce);
 

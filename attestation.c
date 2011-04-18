@@ -64,7 +64,7 @@ uint32_t next_addr() {
 // calculate attestation checksum
 
 void attestation(uint32_t nonce) {
-  uint32_t max_addr = MAX_MEMORY, i, current_addr, last_addr;
+  uint32_t i, current_addr, last_addr;
   uint8_t checksum[CHECKSUM_LENGTH];
   uint8_t nonce_bytes[4];
   uint8_t byte, carry;
@@ -89,7 +89,7 @@ void attestation(uint32_t nonce) {
 
   current_addr = last_addr = next_addr();
 
-  for(i = 0, byte = 0; i < max_addr; i++) {
+  for(i = 0, byte = 0; i < MAX_MEMORY_ACCESSES; i++) {
     // update checksum byte
 
     checksum[byte] += (pgm_read_byte_far(current_addr) ^ checksum[(byte - 2) % CHECKSUM_LENGTH]) + last_addr;

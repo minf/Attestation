@@ -85,6 +85,11 @@ void attestation(uint32_t nonce) {
 
   rc4_init(nonce_bytes, 4);
 
+  // discard first 256 rc4 values
+
+  for(i = 0; i < 256; i++)
+    rc4_next();
+
   // initialize addresses
 
   current_addr = last_addr = next_addr();

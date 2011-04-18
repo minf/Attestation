@@ -63,11 +63,18 @@ uint32_t next_addr() {
 
 // calculate attestation checksum
 
-void attestation() {
-  uint8_t nonce[] = { 0x38, 0x79, 0xf3, 0x1d };
+void attestation(uint32_t nonce) {
   uint32_t max_addr = MAX_MEMORY, i, current_addr, last_addr;
   uint8_t checksum[CHECKSUM_LENGTH];
+  uint8_t nonce_bytes[4];
   uint8_t byte, carry;
+
+  // convert nonce to byte array
+
+  nonce_bytes[0] = (nonce & 0xff000000) >> 24;
+  nonce_bytes[1] = (nonce & 0x00ff0000) >> 16;
+  nonce_bytes[2] = (nonce & 0x0000ff00) >> 8;
+  nonce_bytes[3] = (nonce & 0x000000ff);
 
   // initialize checksum bytes
 
@@ -76,7 +83,7 @@ void attestation() {
 
   // initialize rc4 using nonce
 
-  rc4_init(nonce, 4);
+  rc4_init(nonce_bytes, 4);
 
   // initialize addresses
 

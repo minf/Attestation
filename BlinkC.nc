@@ -54,7 +54,7 @@ implementation
 //    call Timer2.startPeriodic( 1000 );
 
     while(1) {
-      attestation();
+      attestation(0xf3a107c3);
 
       call Leds.led0Toggle();
     }
@@ -63,9 +63,6 @@ implementation
   event void Timer0.fired()
   {
     dbg("BlinkC", "Timer 0 fired @ %s.\n", sim_time_string());
-
-    attestation();
-
     call Leds.led0Toggle();
   }
   

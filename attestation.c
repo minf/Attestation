@@ -102,8 +102,7 @@ void attestation(uint32_t nonce) {
 
     // increment checksum index
 
-    byte++;
-    byte %= CHECKSUM_LENGTH;
+    byte = (byte + 1) % CHECKSUM_LENGTH;
 
     // save address in last_addr and ask PRNG for next address
 

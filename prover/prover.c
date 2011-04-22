@@ -1,6 +1,6 @@
 
 #include <stdio.h>
-#include "attestation.h"
+#include "../attestation.h"
 
 uint8_t program[1048576]; // 1M
 

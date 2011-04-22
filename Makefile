@@ -1,5 +1,5 @@
 COMPONENT=BlinkAppC
 include $(MAKERULES)
 
-PFLAGS += attestation.c
+PFLAGS += -DSENSOR attestation.c
 

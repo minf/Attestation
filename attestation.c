@@ -2,7 +2,7 @@
 // NOTE to avoid cache flushes during the attestation, the code should be 
 //      placed within one cache block (i.e. one single compressed block)
 
-#ifndef PROVER
+#ifdef SENSOR
   #include <avr/pgmspace.h>
 #endif
 

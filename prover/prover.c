@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "../attestation.h"
 
-uint8_t program[1048576]; // 1M
+uint8_t program[131072]; // 128K
 
 void read_program(char* path) {
   FILE* stream = fopen(path, "rb");

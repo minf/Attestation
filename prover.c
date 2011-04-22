@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
   read_program(argv[1]);
 
-  attestation(128934458, checksum);
+  attestation(0xf3a107c3, checksum);
   
   printf("%i,%i,%i,%i\n", checksum[0], checksum[1], checksum[2], checksum[3]);
 }

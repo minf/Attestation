@@ -3,7 +3,6 @@
 #define ATTESTATION_H
 
 #include <stdint.h>
-#include <avr/pgmspace.h>
 
 #define CHECKSUM_LENGTH 4
 
@@ -12,7 +11,7 @@
 
 #define MAX_MEMORY_ACCESSES 1544474 
 
-void attestation(uint32_t nonce);
+void attestation(uint32_t nonce, uint8_t checksum[]);
 
 #endif
 

@@ -2,6 +2,10 @@
 // NOTE to avoid cache flushes during the attestation, the code should be 
 //      placed within one cache block (i.e. one single compressed block)
 
+#ifndef PROVER
+  #include <avr/pgmspace.h>
+#endif
+
 #include "attestation.h"
 
 // RC4 implementation
@@ -63,9 +67,8 @@ uint32_t next_addr() {
 
 // calculate attestation checksum
 
-void attestation(uint32_t nonce) {
+void attestation(uint32_t nonce, uint8_t checksum[]) {
   uint32_t i, current_addr, last_addr;
-  uint8_t checksum[CHECKSUM_LENGTH];
   uint8_t nonce_bytes[4];
   uint8_t byte, carry;
 

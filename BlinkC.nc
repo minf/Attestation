@@ -49,12 +49,14 @@ implementation
 {
   event void Boot.booted()
   {
+      uint8_t checksum[CHECKSUM_LENGTH];
+
 //    call Timer0.startPeriodic( 5000 );
 //    call Timer1.startPeriodic( 500 );
 //    call Timer2.startPeriodic( 1000 );
 
     while(1) {
-      attestation(0xf3a107c3);
+      attestation(0xf3a107c3, checksum);
 
       call Leds.led0Toggle();
     }

@@ -87,8 +87,6 @@ uint64_t attestation(uint32_t nonce) {
   uint8_t byte, carry, tmp;
   uint64_t result;
 
-__asm("nop");
-
   // initialize checksum
 
   for(i = 0; i < CHECKSUM_LENGTH; i++)
@@ -148,8 +146,6 @@ __asm("nop");
     result <<= 8;
     result += checksum[i];
   }
-
-__asm("nop");
 
   return result;
 }

@@ -1,17 +1,19 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "../attestation.h"
 
 uint8_t program[131072]; // 128K
 
-void read_program(char* path) {
+bool read_program(char* path) {
   FILE* stream = fopen(path, "rb");
   size_t num;
 
   if(!stream) {
-    printf("can't read program\n");
+    puts("can't read program");
 
-    return;
+    return false;
   }
 
   num = fread(program, 1, sizeof(program), stream);
@@ -19,6 +21,8 @@ void read_program(char* path) {
   printf("%i elements read\n", num);
 
   fclose(stream);
+
+  return true;
 }
 
 uint8_t pgm_read_byte_far(uint32_t addr) {
@@ -29,16 +33,22 @@ int main(int argc, char* argv[]) {
   uint8_t checksum[CHECKSUM_LENGTH];
 
   if(argc != 2) {
-    printf("missing program path\n");
+    puts("missing program path");
 
-    return 0;
+    return EXIT_FAILURE;
   }
 
-  read_program(argv[1]);
+  if(!read_program(argv[1])) {
+    puts("unable to read program");
+
+    return EXIT_FAILURE;
+  }
 
   attestation(0xf3a107c3, checksum);
   
   printf("%i,%i,%i,%i\n", checksum[0], checksum[1], checksum[2], checksum[3]);
+
+  return EXIT_SUCCESS;
 }
 
 

@@ -37,11 +37,12 @@
  * @author tinyos-help@millennium.berkeley.edu
  **/
 
-configuration BlinkAppC
-{
+#include "blink.h"
+
+configuration BlinkAppC {
 }
-implementation
-{
+
+implementation {
   components MainC, BlinkC, LedsC;
   components new TimerMilliC() as Timer0;
 
@@ -49,5 +50,13 @@ implementation
 
   BlinkC.Timer0 -> Timer0;
   BlinkC.Leds -> LedsC;
+
+  components ActiveMessageC;
+  components new AMSenderC(AM_ATTESTATION);
+
+  BlinkC.Packet -> AMSenderC;
+  BlinkC.AMPacket -> AMSenderC;
+  BlinkC.AMSend -> AMSenderC;
+  BlinkC.AMControl -> ActiveMessageC;
 }
 

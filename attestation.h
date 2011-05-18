@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define CHECKSUM_LENGTH 4 // max 8 (64-bit)
+#define CHECKSUM_LENGTH 8 // max 8 (64-bit)
 
 // due to the coupon collector's problem we have to do 128K * ln(128K) accesses
 // NOTE it increases the attacker's overhead, because the paper assumes 128K memory accesses only

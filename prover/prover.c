@@ -30,7 +30,8 @@ uint8_t pgm_read_byte_far(uint32_t addr) {
 }
 
 int main(int argc, char* argv[]) {
-  uint8_t checksum[CHECKSUM_LENGTH];
+  uint64_t checksum;
+  uint32_t nonce;
 
   if(argc != 2) {
     puts("missing program path");
@@ -44,9 +45,12 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-  attestation(0xf3a107c3, checksum);
+  printf("enter nonce (hex): 0x");
+  scanf("%x", &nonce);
+
+  checksum = attestation(nonce);
   
-  printf("%i,%i,%i,%i\n", checksum[0], checksum[1], checksum[2], checksum[3]);
+  printf("checksum: %lx\n", checksum);
 
   return EXIT_SUCCESS;
 }

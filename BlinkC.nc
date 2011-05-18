@@ -29,28 +29,23 @@
  * 94704.  Attention:  Intel License Inquiry.
  */
 
-/**
- * Implementation for Blink application.  Toggle the red LED when a
- * Timer fires.
- **/
-
-#include "Timer.h"
 #include "attestation.h"
 
 module BlinkC {
-  uses interface Timer<TMilli> as Timer0;
-  uses interface Leds;
-  uses interface Boot;
+  uses {
+    interface Boot;
 
-  uses interface Packet;
-  uses interface AMPacket;
-  uses interface AMSend;
-  uses interface SplitControl as AMControl;
+    interface SplitControl as AMControl;
+    interface AMPacket;
+    interface Packet;
+    interface AMSend as AttestationResponseSend;
+    interface Receive as AttestationRequestReceive;
+  }
 }
 
 implementation {
   bool busy = FALSE;
-  message_t pkt;
+  message_t message;
 
   event void Boot.booted() {
     call AMControl.start();
@@ -58,40 +53,47 @@ implementation {
 
   event void AMControl.startDone(error_t err) {
     if(err == SUCCESS) {
-      call Timer0.startPeriodic(TIMER_PERIOD_MILLI);
+      // nothing
     } else {
       call AMControl.start();
     }
   }
 
   event void AMControl.stopDone(error_t err) {
+    // nothing
   }
 
-  event void Timer0.fired() {
+  void sendAttestationResponse(uint32_t nonce) {
     uint64_t checksum;
 
-//    atomic {
-//      checksum = attestation(0xf3a107c3);
-//    }
+    atomic {
+      checksum = attestation(nonce);
+    }
 
     if(!busy) {
-      AttestationMsg* attestation_pkt = (AttestationMsg*)(call Packet.getPayload(&pkt, sizeof (AttestationMsg)));
-      attestation_pkt->nodeid = TOS_NODE_ID;
-      attestation_pkt->counter = 0;
-      if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(AttestationMsg)) == SUCCESS) {
+      AttestationResponseMsg* response = (AttestationResponseMsg*)(call Packet.getPayload(&message, sizeof(AttestationResponseMsg)));
+
+      response->nonce = nonce;
+      response->checksum = checksum;
+
+      if(call AttestationResponseSend.send(AM_BROADCAST_ADDR, &message, sizeof(AttestationResponseMsg)) == SUCCESS) {
         busy = TRUE;
       }
     }
-
-    call Leds.led0Toggle();
   }
 
-  event void AMSend.sendDone(message_t* msg, error_t error) {
-    if (&pkt == msg) {
-      call Leds.led1Toggle();
-
+  event void AttestationResponseSend.sendDone(message_t* msg, error_t error) {
+    if(&message == msg) {
       busy = FALSE;
     }
+  }
+
+  event message_t* AttestationRequestReceive.receive(message_t* msg, void* payload, uint8_t len) {
+    AttestationRequestMsg* in = (AttestationRequestMsg*)payload;
+
+    sendAttestationResponse(in->nonce);
+
+    return msg;
   }
 }
 

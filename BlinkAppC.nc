@@ -29,34 +29,25 @@
  * 94704.  Attention:  Intel License Inquiry.
  */
 
-/**
- * Blink is a basic application that toggles the a mote LED periodically.
- * It does so by starting a Timer that fires every second. It uses the
- * OSKI TimerMilli service to achieve this goal.
- *
- * @author tinyos-help@millennium.berkeley.edu
- **/
-
 #include "blink.h"
 
 configuration BlinkAppC {
 }
 
 implementation {
-  components MainC, BlinkC, LedsC;
-  components new TimerMilliC() as Timer0;
+  components MainC, BlinkC;
 
   BlinkC -> MainC.Boot;
 
-  BlinkC.Timer0 -> Timer0;
-  BlinkC.Leds -> LedsC;
-
   components ActiveMessageC;
-  components new AMSenderC(AM_ATTESTATION);
-
-  BlinkC.Packet -> AMSenderC;
-  BlinkC.AMPacket -> AMSenderC;
-  BlinkC.AMSend -> AMSenderC;
   BlinkC.AMControl -> ActiveMessageC;
+  BlinkC.Packet -> ActiveMessageC;
+  BlinkC.AMPacket -> ActiveMessageC;
+
+  components new AMSenderC(AM_ATTESTATION_RESPONSE) as AttestationResponseSender;
+  BlinkC.AttestationResponseSend -> AttestationResponseSender;
+
+  components new AMReceiverC(AM_ATTESTATION_REQUEST) as AttestationRequestReceiver;
+  BlinkC.AttestationRequestReceive -> AttestationRequestReceiver;
 }
 

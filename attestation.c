@@ -87,6 +87,17 @@ uint64_t attestation(uint32_t nonce) {
   uint8_t byte, carry, tmp;
   uint64_t result;
 
+#ifdef SENSOR
+  // enable compressed LPM
+
+  __asm__(
+    "ldi r30, 0x93"
+    : /* not outputs */
+    : /* no inputs */
+    : "r30"
+  );
+#endif
+
   // initialize checksum
 
   for(i = 0; i < CHECKSUM_LENGTH; i++)
@@ -146,6 +157,17 @@ uint64_t attestation(uint32_t nonce) {
     result <<= 8;
     result += checksum[i];
   }
+
+#ifdef SENSOR
+  // enable compressed LPM
+
+  __asm__(
+    "ldi r30, 0x94"
+    : /* not outputs */
+    : /* no inputs */
+    : "r30"
+  );
+#endif
 
   return result;
 }
